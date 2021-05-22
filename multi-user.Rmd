@@ -80,3 +80,13 @@ So do `emacs -nw` or `R` or ... whatever command session you want to share.
 Best of all: _All_ the `byobu` (or `tmux`) goodness we talked about in t4
 works the same way. Multiple concurrent sessions. Persistent sessions (_i.e._
 start this, leave it running, re-connect tomorrow. Or next month.
+
+
+## Emacs: Multi-User
+
+### Alternate Demo (as user `edd`)
+
+- If you prefer `byobu` (as I do) and have it use `tmux` (instead of
+  `screen`)
+- Just do `byobu -S /tmp/scratch/session new-session -t joint` 
+- Followed by `chmod o+rw ....` or `chgrp` or ...
