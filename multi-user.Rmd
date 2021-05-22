@@ -1,0 +1,82 @@
+---
+author: Dirk Eddelbuettel and Vincent Arel-Bundock
+title: Multi-user Concurrent Editing with Emacs
+subtitle: "Part of the ESS-Intro (and t4) series"
+institute: "`r format(Sys.Date(), 'This version is dated %d %b %Y')`"
+output:
+  binb::metropolis:
+    incremental: false
+fontsize: 12pt
+classoption: compress,aspectratio=169,handout
+classoptionFull: compress,aspectratio=169
+header-includes:
+  - |
+    ```{=latex}
+    \metroset{titleformat=smallcaps,numbering=fraction,background=light}
+    \setbeamercolor{frametitle}{bg=orange}
+    \hypersetup{colorlinks,citecolor=orange,filecolor=orange,linkcolor=orange,urlcolor=orange}
+    \titlegraphic{\includegraphics[width=2cm]{images/logoESS.png}}
+    ```
+---
+
+
+## Emacs: Mulit-User
+
+### Motivation
+
+- A lot of love online for how _editor XYZ_ supports multi-user mode
+- But ...
+- We have been able to do that with standard Unix tools for maybe two+
+  decades
+- As in Dirk's [_t4_ series](http://dirk.eddelbuettel.com/blog/code/t4/) it
+  is about _combining_ existing (shell) tools for better use
+- Here: `tmux`, or, if one wishes to, its `byobu` frontend
+
+## Emacs: Multi-User
+
+### Setup
+
+- Requirement is multiple accounts on the same machine
+- Back in the day this may have been the departmental or group unix server
+- These days it may be a cheap cloud instance, and an AWS/GCS/Azure/DO/... box
+- Each participant 
+  - needs to be on the box and 
+  - have access to a shared (_i.e._ "joint") "named" tmux socket
+- We then "merely" invoke `tmux` (or `byobu`) with the named socket
+- *Everything* running inside the tmux/byobu session can then be shared
+- Including Emacs (in terminal mode)  or anything else working in terminal
+  mode 
+
+## Emacs: Multi-User
+
+### Simplest Demo (as user `edd` with uid/gid 1000:1000 on Ubuntu)
+
+```sh
+$ mkdir /tmp/scratch               # new dir, not strictly needed
+$ tmux -S /tmp/scratch/session new-session -t joint
+# we are now in a tmux session
+> chmod o+rw /tmp/scratch/session  # so that other user can access
+```
+
+\medskip
+
+We created a _new session_ under the identifiable handle 'joint' and gave rw
+rights. (In real settings you probably want both users under a common 'group'
+for the joint project and make the socket group rw.)
+
+## Emacs: Multi-User
+
+### Simplest Demo (as user `git` with uid/gid 1001:1001 on Ubuntu)
+
+```sh
+$ sudo su git              # currently only other 'user' on my box
+(git) $ tmux -S /tmp/scratch/session attach-session -t joint
+```
+
+That. Is. All. The two sessions mirror each other.
+
+So do `emacs -nw` or `R` or ... whatever command session you want to share.
+
+Best of all: _All_ the `byobu` (or `tmux`) goodness we talked about in t4
+works the same way. Multiple concurrent sessions. Persistent sessions (_i.e._
+start this, leave it running, re-connect tomorrow. Or next month.
