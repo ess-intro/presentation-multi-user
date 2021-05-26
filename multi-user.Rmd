@@ -1,5 +1,5 @@
 ---
-author: Dirk Eddelbuettel and Vincent Arel-Bundock
+author: Dirk Eddelbuettel, Vincent Arel-Bundock, Grant McDermott
 title: Multi-user Concurrent Editing with Emacs
 subtitle: "Part of the ESS-Intro (and t4) series"
 institute: "`r format(Sys.Date(), 'This version is dated %d %b %Y')`"
@@ -101,7 +101,22 @@ start this, leave it running, re-connect tomorrow. Or next month.
 - Plotting on tty is an issue but _e.g._ `httpgd` may help 
   - but ideally we would be able to have it send traffic to mulitple devices
     / users
-    
+
+
+## Emacs: Multi-User
+
+### Lastly ...
+
+- This is not meant to be normative
+- Other editors can do similar things just fine (`code` is popular)
+- (Commercial) online solutions also available (\url{replit.io})
+
+### But ... we really like Emacs as it 
+
+- is 'always there' 
+- has support for just about anything
+- is extensible
+
 
 # Appendix
 
