@@ -20,64 +20,61 @@ header-includes:
 ---
 
 
-## Emacs: Multi-User
+## Emacs: Multi-User Concurrent Editing
 
 ### Motivation
 
 - A lot of love online for how _editor XYZ_ supports multi-user mode
-- But ...
-- We have been able to do that with standard Unix tools for maybe two+
-  decades
+- But ... we have been able to do that with standard Unix tools for two+ decades
 - As in Dirk's [_t4_ series](http://dirk.eddelbuettel.com/blog/code/t4/) it
   is about _combining_ existing (shell) tools for better use
-- Here: `tmux`, or, if one wishes to, its `byobu` frontend
+- Here: `tmux`, or its alternate frontend `byobu`, can shine
 
-## Emacs: Multi-User
+## Emacs: Multi-User Concurrent Editing
 
 ### Setup
 
-- Requirement is multiple accounts on the same machine
-- Back in the day this may have been the departmental or group unix server
-- These days it may be a cheap cloud instance, and an AWS/GCS/Azure/DO/... box
-- Each participant 
-  - needs to be on the box and 
+- Requirement: We assume multiple accounts on the same machine
+   - _e.g._ a departmental server, research group server, AWS/GCS/Azure/DO instance ...
+- Each participant needs to
+  - be able to access the box via `ssh` 
   - have access to a shared (_i.e._ "joint") "named" tmux socket
-  - we on purpose to not cover account creation, `root` use, ...
-- We then "merely" invoke `tmux` (or `byobu`) with the named socket
-- *Everything* running inside the tmux/byobu session can then be shared
-- Including Emacs (in terminal mode) or anything else working in terminal
+  - (and we do not cover account creation, `root` use, ...)
+- We then merely invoke `tmux` (or `byobu`), once creating a named socket
+   - *Everything* running inside the tmux/byobu session can then be shared
+   - Including Emacs (in terminal mode) or anything else working in terminal
   mode 
 
-## Emacs: Multi-User
+## Emacs: Multi-User Concurrent Editing
 
-### Simplest Demo 
+### Simplest Demo: Launch It 
 
-This runs as the user starting the sessione, _i.e._ the one granting access
-to his session.
+This runs starts the session, _i.e._ the one granting access to his session.
 
 ```sh
-$ mkdir /tmp/scratch               # new dir, not strictly needed
-$ tmux -S /tmp/scratch/session new-session -t joint -s joint
+# start tmux: named socket (-S), group (-t) and session (-s) names
+$ tmux -S /tmp/joint-session new-session -t joint -s joint
 # we are now in a tmux session
-> chmod o+rw /tmp/scratch/session  # so that other user can access
+> chmod o+rw /tmp/joint-session  # so that other user can access
 ```
 
 \medskip
 
-We created a _new session_ under the identifiable handle 'joint' and gave rw
-rights. (In real settings you probably want both users under a common 'group'
-for the joint project and make the socket group rw.)
+We created a _new session_ under the handle 'joint' and gave it `rw` (==
+"read-write") rights. (In real settings you probably want both users under a
+common 'group' for the joint project and make the socket group rw.)
 
-## Emacs: Multi-User
+## Emacs: Multi-User Concurrent Editing
 
-### Simplest Demo 
+### Simplest Demo: Joint It
 
 This runs as one of the users accessing the session. The only requirements
 are to be one the same machine, _and_ to be part of the group having access
 to the shared socket.
 
 ```sh
-$ tmux -S /tmp/scratch/session attach-session -t joint 
+$ tmux -S /tmp/joint-session attach-session -t joint     ## or also
+$ byobu -S /tmp/joint-session attach-session -t joint 
 ```
 
 That. Is. All. The two sessions mirror each other.
@@ -85,7 +82,7 @@ That. Is. All. The two sessions mirror each other.
 So do `emacs -nw` or `R` or ... whatever command session you want to share.
 
 Best of all: _All_ the `byobu` (or `tmux`) goodness we talked about in t4
-works the same way. Multiple concurrent sessions. Persistent sessions (_i.e._
+works the same way. Multiple concurrent sessions. Persistent sessions _i.e._
 start this, leave it running, re-connect tomorrow. Or next month.
 
 
@@ -98,7 +95,7 @@ start this, leave it running, re-connect tomorrow. Or next month.
 <!-- - Just do `byobu -S /tmp/scratch/session new-session -t joint`  -->
 <!-- - Followed by `chmod o+rw ....` or `chgrp` or ... -->
 
-## Emacs: Multi-User
+## Emacs: Multi-User Concurrent Editing
 
 ### Other Tricks
 
@@ -110,7 +107,7 @@ start this, leave it running, re-connect tomorrow. Or next month.
     / users
 
 
-## Emacs: Multi-User
+## Emacs: Multi-User Concurrent Editing
 
 ### Lastly ...
 
@@ -125,11 +122,29 @@ start this, leave it running, re-connect tomorrow. Or next month.
 - is extensible
 
 
-# Appendix
+## Emacs: Multi-User Concurrent Editing
 
-## Open Questions
+### Security
 
-- Detach (normal) versus exit (once ?)
+- We do stress that letting other users access 
+  - _your_ session via the shared socket 
+  - gives them _your session_ with access to all _you_ can access
+  - this may include mail, gpg or ssh keys and more
+- That means _any_ files accessible to _you_ are now also accessible to them
+- So use on personal servers containing personal data may not be the first choice
+- However, on work or cloud settings with no personal files less of an issue
 
-- Security:  When user 2 joins he/she is in your session. Keep that in mind.
-Sharing maybe best done in 'empty-ish' systems
+## Emacs: Multi-User Concurrent Editing
+
+### Summary
+
+- An _easy_ and _powerful_ and _generic_ way to share a session
+- Works for Emacs, also works for other (console) editors, R, ...
+- While keeping possible limitation in mind, it can facilitate collaboration
+
+
+<!-- # Appendix -->
+
+<!-- ## Open Questions -->
+
+<!-- - Detach (normal) versus exit (once ?) -->
